@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ai.academy Nairobi — Coming Soon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800;900&family=Nunito+Sans:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #2c2c2c;
+      --bg-deep:     #1e1e1e;
+      --surface:     #363636;
+      --border:      rgba(255,255,255,0.08);
+      --white:       #ffffff;
+      --gray-1:      #b0b0b0;
+      --gray-2:      #6e6e6e;
+      --gray-3:      #444444;
+      --accent:      #ffffff;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--white);
+      font-family: 'Nunito', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* ── Canvas background ── */
+    #neural-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none; /* mouse events tracked via window listener, not canvas */
+    }
+
+    /* ── Layout ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 2rem 3.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Logo ── */
+    .logo {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+      user-select: none;
+    }
+    .logo-main {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.7rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .logo-ai {
+      color: var(--white);
+    }
+    .logo-dot {
+      color: var(--white);
+    }
+    .logo-academy {
+      color: var(--gray-1);
+    }
+    .logo-city {
+      font-family: 'Nunito Sans', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 300;
+      letter-spacing: 0.35em;
+      color: var(--gray-2);
+      text-transform: uppercase;
+      margin-top: 3px;
+      padding-left: 2px;
+    }
+
+    /* ── Nav pill ── */
+    .nav-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.45rem 1rem;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--gray-1);
+      letter-spacing: 0.03em;
+    }
+    .nav-pill .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #7dff9d;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+
+    /* ── Hero ── */
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 5rem 2rem 4rem;
+      gap: 0;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-2);
+      border: 1px solid var(--border);
+      padding: 0.4rem 1rem;
+      border-radius: 999px;
+      margin-bottom: 2.5rem;
+      background: rgba(255,255,255,0.03);
+    }
+    .hero-eyebrow span {
+      color: var(--gray-1);
+    }
+
+    /* ── Main headline ── */
+    .hero-headline {
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 800;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      max-width: 900px;
+      margin-bottom: 1.8rem;
+      color: var(--white);
+    }
+    .hero-headline .highlight {
+      color: var(--gray-1);
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    .hero-sub {
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: var(--gray-1);
+      max-width: 520px;
+      line-height: 1.75;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ── Email form ── */
+    .email-form {
+      display: flex;
+      gap: 0;
+      width: 100%;
+      max-width: 460px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 6px;
+      margin-bottom: 1rem;
+    }
+    .email-form input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      color: var(--white);
+      padding: 0.65rem 1rem;
+    }
+    .email-form input::placeholder {
+      color: var(--gray-2);
+    }
+    .email-form button {
+      background: var(--white);
+      color: var(--bg-deep);
+      border: none;
+      border-radius: 9px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 800;
+      padding: 0.65rem 1.4rem;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+      transition: opacity 0.15s;
+      white-space: nowrap;
+    }
+    .email-form button:hover { opacity: 0.88; }
+
+    .form-note {
+      font-size: 0.72rem;
+      color: var(--gray-2);
+      letter-spacing: 0.03em;
+      margin-bottom: 4rem;
+    }
+
+    /* ── Stats row ── */
+    .stats {
+      display: flex;
+      gap: 3.5rem;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--gray-2);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .stat-divider {
+      width: 1px;
+      height: 36px;
+      background: var(--border);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 1.8rem 3.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-left {
+      font-size: 0.75rem;
+      color: var(--gray-2);
+      font-family: 'Nunito Sans', sans-serif;
+      font-weight: 300;
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+    .footer-links a {
+      font-size: 0.75rem;
+      color: var(--gray-2);
+      text-decoration: none;
+      font-family: 'Nunito Sans', sans-serif;
+      transition: color 0.15s;
+    }
+    .footer-links a:hover { color: var(--white); }
+
+    /* ── Floating badge ── */
+    .badge-nairobi {
+      position: fixed;
+      bottom: 5.5rem;
+      right: 2.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.75rem 1.1rem;
+      font-size: 0.72rem;
+      color: var(--gray-1);
+      font-family: 'Nunito Sans', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      transform: rotate(180deg);
+      z-index: 10;
+      opacity: 0.6;
+    }
+
+    /* ── Reveal animation ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      animation: revealUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+    .reveal-1 { animation-delay: 0.05s; }
+    .reveal-2 { animation-delay: 0.2s; }
+    .reveal-3 { animation-delay: 0.35s; }
+    .reveal-4 { animation-delay: 0.5s; }
+    .reveal-5 { animation-delay: 0.65s; }
+    .reveal-6 { animation-delay: 0.8s; }
+
+    @keyframes revealUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .topbar { padding: 1.4rem 1.5rem; }
+      .hero { padding: 4rem 1.5rem 3rem; }
+      .hero-headline { font-size: 2.8rem; }
+      .email-form { flex-direction: column; gap: 8px; border-radius: 12px; }
+      .email-form button { border-radius: 8px; padding: 0.75rem; }
+      .stats { gap: 2rem; }
+      .stat-divider { display: none; }
+      .footer { padding: 1.4rem 1.5rem; }
+      .badge-nairobi { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="neural-bg"></canvas>
+
+<div class="page">
+
+  <!-- Top bar -->
+  <header class="topbar reveal reveal-1">
+    <div class="logo">
+      <div class="logo-main">
+        <span class="logo-ai">ai</span><span class="logo-dot">.</span><span class="logo-academy">academy</span>
+      </div>
+      <div class="logo-city">Nairobi</div>
+    </div>
+    <div class="nav-pill">
+      <span class="dot"></span>
+      Coming Soon
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <main class="hero">
+
+    <div class="hero-eyebrow reveal reveal-2">
+      <span>AI Education &nbsp;·&nbsp; Nairobi, Kenya</span>
+    </div>
+
+    <h1 class="hero-headline reveal reveal-3">
+      Building Agents<br />
+      <span class="highlight">for Business</span>
+    </h1>
+
+    <p class="hero-sub reveal reveal-4">
+      Africa's first academy dedicated to teaching businesses how to design, deploy, and operate AI agents — practical skills for the real economy.
+    </p>
+
+    <div class="email-form reveal reveal-5">
+      <input type="email" placeholder="Enter your email address" id="email-input" />
+      <button onclick="handleSubmit()">Notify Me</button>
+    </div>
+    <p class="form-note reveal reveal-5" id="form-note">No spam. Just early access when we launch.</p>
+
+    <div class="stats reveal reveal-6">
+      <div class="stat">
+        <div class="stat-value">Real-World</div>
+        <div class="stat-label">Agent Projects</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-value">Africa-First</div>
+        <div class="stat-label">Curriculum</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-value">100%</div>
+        <div class="stat-label">Practical Focus</div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer reveal reveal-6">
+    <div class="footer-left">© 2025 ai.academy Nairobi. All rights reserved.</div>
+    <nav class="footer-links">
+      <a href="#">About</a>
+      <a href="#">Curriculum</a>
+      <a href="#">Contact</a>
+    </nav>
+  </footer>
+
+</div>
+
+<!-- Floating location badge -->
+<div class="badge-nairobi">Nairobi · Kenya</div>
+
+<script>
+  /* ─────────────────────────────────────────────
+     CONFIGURATION
+     Replace the Formspree URL below with your own.
+     Sign up free at https://formspree.io → New Form
+     → copy the endpoint like: https://formspree.io/f/xabc1234
+  ───────────────────────────────────────────── */
+  const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID';
+
+  /* ── Neural network canvas with mouse repulsion ── */
+  (function () {
+    const canvas = document.getElementById('neural-bg');
+    const ctx    = canvas.getContext('2d');
+
+    let W, H, nodes;
+    const COUNT        = 65;
+    const MAX_DIST     = 165;
+    const MOUSE_RADIUS = 130;   /* repulsion field radius */
+    const REPEL_FORCE  = 2.8;   /* how strongly nodes flee the cursor */
+
+    /* track mouse position */
+    const mouse = { x: -9999, y: -9999 };
+    window.addEventListener('mousemove', e => {
+      mouse.x = e.clientX;
+      mouse.y = e.clientY;
+    });
+    window.addEventListener('mouseleave', () => {
+      mouse.x = -9999;
+      mouse.y = -9999;
+    });
+
+    function resize() {
+      W = canvas.width  = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function initNodes() {
+      nodes = Array.from({ length: COUNT }, () => ({
+        x:   Math.random() * W,
+        y:   Math.random() * H,
+        vx:  (Math.random() - 0.5) * 0.4,
+        vy:  (Math.random() - 0.5) * 0.4,
+        ox:  0,   /* original/base velocity x */
+        oy:  0,   /* original/base velocity y */
+        r:   Math.random() * 1.8 + 0.9,
+      }));
+      /* store base velocities */
+      nodes.forEach(n => { n.ox = n.vx; n.oy = n.vy; });
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+
+      /* ── apply mouse repulsion ── */
+      nodes.forEach(n => {
+        const dx   = n.x - mouse.x;
+        const dy   = n.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < MOUSE_RADIUS && dist > 0) {
+          /* push node away from cursor, stronger when closer */
+          const force  = (1 - dist / MOUSE_RADIUS) * REPEL_FORCE;
+          const nx     = dx / dist;
+          const ny     = dy / dist;
+          n.vx += nx * force * 0.18;
+          n.vy += ny * force * 0.18;
+        }
+
+        /* gently ease velocity back to original so nodes don't escape forever */
+        n.vx += (n.ox - n.vx) * 0.04;
+        n.vy += (n.oy - n.vy) * 0.04;
+
+        /* clamp speed */
+        const speed = Math.sqrt(n.vx * n.vx + n.vy * n.vy);
+        if (speed > 4) { n.vx = (n.vx / speed) * 4; n.vy = (n.vy / speed) * 4; }
+      });
+
+      /* ── draw connections ── */
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dx   = nodes[i].x - nodes[j].x;
+          const dy   = nodes[i].y - nodes[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < MAX_DIST) {
+            const alpha = (1 - dist / MAX_DIST) * 0.14;
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
+            ctx.lineWidth   = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+
+      /* ── draw nodes — brighter when near mouse ── */
+      nodes.forEach(n => {
+        const dx    = n.x - mouse.x;
+        const dy    = n.y - mouse.y;
+        const dist  = Math.sqrt(dx * dx + dy * dy);
+        const close = dist < MOUSE_RADIUS;
+        const glow  = close ? 0.7 + (1 - dist / MOUSE_RADIUS) * 0.3 : 0.28;
+        const radius = close ? n.r * (1 + (1 - dist / MOUSE_RADIUS) * 1.4) : n.r;
+
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${glow})`;
+        ctx.fill();
+      });
+
+      /* ── move ── */
+      nodes.forEach(n => {
+        n.x += n.vx;
+        n.y += n.vy;
+        if (n.x < -10)   n.x = W + 10;
+        if (n.x > W + 10) n.x = -10;
+        if (n.y < -10)   n.y = H + 10;
+        if (n.y > H + 10) n.y = -10;
+      });
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    initNodes();
+    draw();
+  })();
+
+  /* ── Email form — posts to Formspree ── */
+  async function handleSubmit() {
+    const input  = document.getElementById('email-input');
+    const btn    = document.querySelector('.email-form button');
+    const note   = document.getElementById('form-note');
+    const email  = input.value.trim();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      note.textContent = 'Please enter a valid email address.';
+      note.style.color = '#ff8080';
+      return;
+    }
+
+    btn.textContent = 'Sending…';
+    btn.disabled    = true;
+
+    try {
+      const res = await fetch(FORMSPREE_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    JSON.stringify({ email }),
+      });
+
+      if (res.ok) {
+        input.value         = '';
+        note.textContent    = "✓ You're on the list! We'll be in touch soon.";
+        note.style.color    = '#7dff9d';
+        note.style.fontWeight = '600';
+        btn.textContent     = 'Done ✓';
+      } else {
+        throw new Error('server error');
+      }
+    } catch {
+      note.textContent = 'Something went wrong. Try again shortly.';
+      note.style.color = '#ff8080';
+      btn.textContent  = 'Notify Me';
+      btn.disabled     = false;
+    }
+  }
+
+  document.getElementById('email-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleSubmit();
+  });
+</script>
+
+</body>
+</html>
