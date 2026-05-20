@@ -364,8 +364,14 @@
     </h1>
 
     <p class="hero-sub reveal reveal-4">
-      We deploy intelligent AI agents that free your team from repetitive work and equip your people with the practical skills to lead in an AI-driven world.
+      We deploy intelligent AI agents that free your team from repetitive work — and equip your people with the practical skills to lead in an AI-driven world.
     </p>
+
+    <div class="email-form reveal reveal-5">
+      <input type="email" placeholder="Enter your email address" id="email-input" />
+      <button onclick="handleSubmit()">Notify Me</button>
+    </div>
+    <p class="form-note reveal reveal-5" id="form-note">No spam. Just early access when we launch.</p>
 
     <div class="stats reveal reveal-6">
       <div class="stat">
@@ -388,7 +394,7 @@
 
   <!-- Footer -->
   <footer class="footer reveal reveal-6">
-    <div class="footer-left">© 2026 ai.academy Nairobi. All rights reserved.</div>
+    <div class="footer-left">© 2025 ai.academy Nairobi. All rights reserved.</div>
     <nav class="footer-links">
       <a href="#">About</a>
       <a href="#">Curriculum</a>
@@ -408,7 +414,7 @@
      Sign up free at https://formspree.io → New Form
      → copy the endpoint like: https://formspree.io/f/xabc1234
   ───────────────────────────────────────────── */
-  const FORMSPREE_URL = '';
+  const FORMSPREE_URL = 'https://formspree.io/f/YOUR_FORM_ID';
 
   /* ── Neural network canvas with mouse repulsion ── */
   (function () {
@@ -438,16 +444,24 @@
     }
 
     function initNodes() {
+      const colors = [
+        '120, 200, 255',   /* sky blue */
+        '160, 120, 255',   /* violet */
+        '80,  220, 180',   /* teal */
+        '255, 180,  80',   /* amber */
+        '255, 100, 150',   /* rose */
+        '100, 255, 180',   /* mint */
+      ];
       nodes = Array.from({ length: COUNT }, () => ({
         x:   Math.random() * W,
         y:   Math.random() * H,
         vx:  (Math.random() - 0.5) * 0.4,
         vy:  (Math.random() - 0.5) * 0.4,
-        ox:  0,   /* original/base velocity x */
-        oy:  0,   /* original/base velocity y */
+        ox:  0,
+        oy:  0,
         r:   Math.random() * 1.8 + 0.9,
+        color: colors[Math.floor(Math.random() * colors.length)],
       }));
-      /* store base velocities */
       nodes.forEach(n => { n.ox = n.vx; n.oy = n.vy; });
     }
 
@@ -485,12 +499,16 @@
           const dy   = nodes[i].y - nodes[j].y;
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < MAX_DIST) {
-            const alpha = (1 - dist / MAX_DIST) * 0.14;
+            const alpha = (1 - dist / MAX_DIST) * 0.18;
+            /* blend the two node colors for the connecting line */
+            const gradient = ctx.createLinearGradient(nodes[i].x, nodes[i].y, nodes[j].x, nodes[j].y);
+            gradient.addColorStop(0, `rgba(${nodes[i].color},${alpha})`);
+            gradient.addColorStop(1, `rgba(${nodes[j].color},${alpha})`);
             ctx.beginPath();
             ctx.moveTo(nodes[i].x, nodes[i].y);
             ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = `rgba(255,255,255,${alpha})`;
-            ctx.lineWidth   = 0.6;
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth   = 0.7;
             ctx.stroke();
           }
         }
@@ -502,12 +520,20 @@
         const dy    = n.y - mouse.y;
         const dist  = Math.sqrt(dx * dx + dy * dy);
         const close = dist < MOUSE_RADIUS;
-        const glow  = close ? 0.7 + (1 - dist / MOUSE_RADIUS) * 0.3 : 0.28;
-        const radius = close ? n.r * (1 + (1 - dist / MOUSE_RADIUS) * 1.4) : n.r;
+        const glow  = close ? 0.85 + (1 - dist / MOUSE_RADIUS) * 0.15 : 0.45;
+        const radius = close ? n.r * (1 + (1 - dist / MOUSE_RADIUS) * 1.6) : n.r;
+
+        /* outer glow when close */
+        if (close) {
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, radius * 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${n.color},${(1 - dist / MOUSE_RADIUS) * 0.12})`;
+          ctx.fill();
+        }
 
         ctx.beginPath();
         ctx.arc(n.x, n.y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255,255,255,${glow})`;
+        ctx.fillStyle = `rgba(${n.color},${glow})`;
         ctx.fill();
       });
 
